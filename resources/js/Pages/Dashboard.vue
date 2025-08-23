@@ -1,5 +1,6 @@
 <script setup>
 import Dialogue from '@/Components/Dialogue.vue';
+import FileLister from '@/Components/FileLister.vue';
 import FileUploadForm from '@/Components/FileUploadForm.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { CloudArrowUpIcon } from '@heroicons/vue/24/outline'
@@ -48,7 +49,7 @@ function confirm() {
                             </button>
                             </template>
                         </Dialogue>
-                        You're logged in! Hi
+                        <FileLister/>
                         
                     </div>
                 </div>

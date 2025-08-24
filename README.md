@@ -48,6 +48,7 @@
     </li>
     <li>Start Docker environment:
         <pre><code>npm install</code></pre>
+        <pre><code>composer install</code></pre>
         <pre><code>npm run build</code></pre>
         <pre><code>docker compose build</code></pre>
         <pre><code>docker compose up -d</code></pre>

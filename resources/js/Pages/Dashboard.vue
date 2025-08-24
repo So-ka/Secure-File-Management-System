@@ -23,7 +23,7 @@ function confirm() {
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                Dashboard
+                Your Files & Documents
             </h2>
         </template>
 

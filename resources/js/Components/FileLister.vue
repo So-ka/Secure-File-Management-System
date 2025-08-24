@@ -1,6 +1,15 @@
 <template>
   <div class="files-container">
 
+    <!-- Confirmation Dialog -->
+    <dialog ref="confirmDialog" class="confirm-dialog">
+      <p>Are you sure you want to delete this file?</p>
+      <div class="dialog-actions">
+        <button @click="onConfirm" class="confirm-btn">Yes</button>
+        <button @click="onCancel" class="cancel-btn">No</button>
+      </div>
+    </dialog>
+
     <div v-if="loading" class="status-message">Loading files...</div>
     <div v-if="error" class="status-message error">{{ error }}</div>
 
@@ -30,7 +39,7 @@
             Download
           </a>
 
-          <button @click="deleteFile(file.id)" 
+          <button @click="promptDelete(file.id)" 
                   class="delete-btn" 
                   :disabled="deletingId === file.id"
                   :title="'Delete ' + file.original_name"
@@ -60,6 +69,9 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { useToast } from 'vue-toastification'
+
 export default {
   props: {
     searchQuery: {
@@ -73,6 +85,7 @@ export default {
       loading: false,
       error: null,
       deletingId: null,
+      fileToDelete: null,  // holds id pending deletion confirmation
       pagination: {
         current_page: 1,
         last_page: 1,
@@ -92,25 +105,24 @@ export default {
         'image/png': 'PNG',
         'text/plain': 'TXT'
       }
-    };
+    }
   },
   watch: {
     searchQuery() {
-      // Reset to first page whenever search query changes
-      this.fetchFiles(1);
+      this.fetchFiles(1)
     }
   },
   mounted() {
-    this.fetchFiles();
+    this.fetchFiles()
   },
   methods: {
     async fetchFiles(page = 1) {
-      this.loading = true;
-      this.error = null;
+      this.loading = true
+      this.error = null
       try {
-        let path = `/files?page=${page}`;
+        let path = `/files?page=${page}`
         if (this.searchQuery) {
-          path += `&search=${encodeURIComponent(this.searchQuery)}`;
+          path += `&search=${encodeURIComponent(this.searchQuery)}`
         }
         const response = await fetch(path, {
           headers: {
@@ -119,13 +131,13 @@ export default {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
           },
           credentials: 'same-origin'
-        });
+        })
         if (!response.ok) {
-          this.error = `Failed to load files: ${response.statusText}`;
+          this.error = `Failed to load files: ${response.statusText}`
           return;
         }
-        const data = await response.json();
-        this.files = data.data;
+        const data = await response.json()
+        this.files = data.data
         this.pagination = {
           current_page: data.current_page,
           last_page: data.last_page,
@@ -133,59 +145,62 @@ export default {
           total: data.total,
           from: data.from,
           to: data.to
-        };
+        }
       } catch {
-        this.error = 'Error fetching files.';
+        this.error = 'Error fetching files.'
       } finally {
-        this.loading = false;
+        this.loading = false
       }
     },
     changePage(page) {
       if (page >= 1 && page <= this.pagination.last_page) {
-        this.fetchFiles(page);
+        this.fetchFiles(page)
       }
     },
     getFileExtension(mimeType) {
-      return this.mimeTypeMap[mimeType] || mimeType.split('/').pop().toUpperCase();
+      return this.mimeTypeMap[mimeType] || mimeType.split('/').pop().toUpperCase()
     },
     formatSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      if (bytes === 0) return '0 Bytes'
+      const k = 1024
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
     },
     formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      const date = new Date(dateString)
+      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
     },
     formatFullDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleString();
+      const date = new Date(dateString)
+      return date.toLocaleString()
     },
-    async deleteFile(fileId) {
-      if (!confirm('Are you sure you want to delete this file?')) return;
-
-      this.deletingId = fileId;
-      this.error = null;
-
+    promptDelete(fileId) {
+      this.fileToDelete = fileId
+      this.$refs.confirmDialog.showModal()
+    },
+    async onConfirm() {
+      this.$refs.confirmDialog.close()
+      this.deletingId = this.fileToDelete
+      const toast = useToast()
       try {
-        await axios.delete(`/files/${fileId}`);
-        this.fetchFiles(this.pagination.current_page);
-      } catch (error) {
-        if (error.response && error.response.data && error.response.data.message) {
-          this.error = error.response.data.message;
-        } else {
-          this.error = 'Network or server error while deleting file.';
-        }
+        await axios.delete(`/files/${this.fileToDelete}`)
+        toast.success('File deleted successfully!')
+        this.fetchFiles(this.pagination.current_page)
+      } catch (e) {
+        this.error = e.response?.data?.message || 'Error deleting file.'
       } finally {
-        this.deletingId = null;
+        this.deletingId = null
+        this.fileToDelete = null
       }
+    },
+    onCancel() {
+      this.$refs.confirmDialog.close()
+      this.fileToDelete = null
     }
   }
-};
+}
 </script>
-
 
 <style scoped>
 .files-container {
@@ -367,5 +382,44 @@ export default {
 .pagination-summary {
   font-size: 0.875rem;
   color: #6b7280;
+}
+
+/* Dialog styles */
+.confirm-dialog {
+  border: none;
+  border-radius: 6px;
+  padding: 20px;
+  max-width: 300px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.confirm-dialog::backdrop {
+  background: rgba(0,0,0,0.4);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.confirm-btn {
+  padding: 6px 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  padding: 6px 12px;
+  background: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 </style>

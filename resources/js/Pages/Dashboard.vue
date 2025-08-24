@@ -1,15 +1,27 @@
 <script setup>
-import Dialogue from '@/Components/Dialogue.vue';
+
 import FileLister from '@/Components/FileLister.vue';
 import FileUploadForm from '@/Components/FileUploadForm.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { CloudArrowUpIcon } from '@heroicons/vue/24/outline'
 
 import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue'
+import { ref,watch } from 'vue'
 const open = ref(false);
 
 const searchQuery = ref('');
+
+const dialogRef = ref(null)
+
+watch(open, (val) => {
+  if (val) dialogRef.value.showModal()
+  else dialogRef.value.close()
+})
+
+function closeDialog() {
+  open.value = false
+  dialogRef.value.close()
+}
 
 function confirm() {
   alert('Confirmed!')
@@ -51,16 +63,23 @@ function confirm() {
                         </div>
                         </div>
 
-                        <Dialogue v-model="open" title="File Upload">
-                            <!--Modal heree-->
-                            <FileUploadForm @close-dialog="open = false" />
-                            <!--Modal End heree-->
-                            <template #footer>
-                            <button @click="open = false" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">
+                        <dialog ref="dialogRef" class="dialog-element rounded-lg p-6 w-1/2 relative shadow-lg">
+                            <!-- Header with title and close button -->
+                            <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold">File Upload</h2>
+                            <button @click="closeDialog" class="text-gray-500 hover:text-gray-700">✕</button>
+                            </div>
+
+                            <!-- Modal content slot -->
+                            <FileUploadForm @close-dialog="closeDialog" />
+
+                            <!-- Footer slot -->
+                            <div class="flex justify-end gap-2 mt-4">
+                            <button @click="closeDialog" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">
                                 Cancel
                             </button>
-                            </template>
-                        </Dialogue>
+                            </div>
+                        </dialog>
                         <FileLister :search-query="searchQuery"/>
                         
                     </div>
@@ -71,6 +90,13 @@ function confirm() {
 </template>
 
 <style scoped>
+.dialog-element::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+.dialog-element {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
 .search-upload-wrapper {
   display: flex;
   width: 100%;

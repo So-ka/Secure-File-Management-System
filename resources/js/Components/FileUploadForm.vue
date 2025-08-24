@@ -46,6 +46,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 // Use heroicons (or your own icons)
 import { DocumentIcon, DocumentTextIcon, DocumentChartBarIcon, DocumentPlusIcon } from '@heroicons/vue/24/outline'
@@ -61,17 +64,19 @@ const allowedTypes = [
   'application/vnd.oasis.opendocument.text'
 ]
 
+
 function handleFiles(event) {
   let selectedFiles = Array.from(event.target.files)
 
   if (files.value.length + selectedFiles.length > 5) {
-    alert('You can upload maximum 5 files at a time.')
+      
+    toast.error('You can upload maximum 5 files at a time.');
     return
   }
 
   selectedFiles.forEach(file => {
     if (!allowedTypes.includes(file.type)) {
-      alert(`File type not allowed: ${file.name}`)
+      toast.error(`File type not allowed: ${file.name}`);
       return
     }
     files.value.push(file)
@@ -118,14 +123,14 @@ async function uploadFiles() {
     });
 
     emit('close-dialog');
-    alert(response.data.message);
+    toast.success(response.data.message);
     files.value = [];
 
     // Refresh the page
     window.location.reload();
   } catch (error) {
     console.error(error);
-    alert('Upload failed!');
+    toast.error('Upload failed!');
 
     // Optionally refresh on error as well
     window.location.reload();

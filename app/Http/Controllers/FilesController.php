@@ -45,16 +45,28 @@ class FilesController extends Controller
             'files' => $uploadedFiles
         ]);
     }
-    public function index(Request $request)
-{
-    $user = Auth::user();
-    
-    $perPage = 5;
-    $files = files::where('user_id', $user->id)
-                 ->orderBy('created_at', 'desc')
-                 ->paginate($perPage);
 
-    return response()->json($files);
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        
+        $perPage = 5;
+
+        // Start query for the user's files
+        $query = files::where('user_id', $user->id);
+
+        // Apply search filter if provided
+        Log::info('fetching files : '.$request->search);
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('original_name', 'like', '%'.$search.'%');
+        }
+
+        // Order and paginate
+        $files = $query->orderBy('created_at', 'desc')
+                    ->paginate($perPage);
+
+        return response()->json($files);
     }
 
     public function download(files $file)

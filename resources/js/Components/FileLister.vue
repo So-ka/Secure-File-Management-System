@@ -42,46 +42,14 @@
       </li>
     </ul>
 
-    <!-- Pagination Controls -->
     <div v-if="pagination.last_page > 1" class="pagination-wrapper">
       <nav class="pagination">
-        <button 
-          @click="changePage(1)" 
-          :disabled="pagination.current_page === 1"
-          class="pagination-btn"
-        >
-          First
-        </button>
-        
-        <button 
-          @click="changePage(pagination.current_page - 1)" 
-          :disabled="pagination.current_page === 1"
-          class="pagination-btn"
-        >
-          Previous
-        </button>
-
-        <span class="pagination-info">
-          Page {{ pagination.current_page }} of {{ pagination.last_page }}
-        </span>
-
-        <button 
-          @click="changePage(pagination.current_page + 1)" 
-          :disabled="pagination.current_page === pagination.last_page"
-          class="pagination-btn"
-        >
-          Next
-        </button>
-
-        <button 
-          @click="changePage(pagination.last_page)" 
-          :disabled="pagination.current_page === pagination.last_page"
-          class="pagination-btn"
-        >
-          Last
-        </button>
+        <button @click="changePage(1)" :disabled="pagination.current_page === 1" class="pagination-btn">First</button>
+        <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page === 1" class="pagination-btn">Previous</button>
+        <span class="pagination-info">Page {{ pagination.current_page }} of {{ pagination.last_page }}</span>
+        <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page === pagination.last_page" class="pagination-btn">Next</button>
+        <button @click="changePage(pagination.last_page)" :disabled="pagination.current_page === pagination.last_page" class="pagination-btn">Last</button>
       </nav>
-
       <div class="pagination-summary">
         Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} files
       </div>
@@ -93,6 +61,12 @@
 
 <script>
 export default {
+  props: {
+    searchQuery: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       files: [],
@@ -120,12 +94,25 @@ export default {
       }
     };
   },
+  watch: {
+    searchQuery() {
+      // Reset to first page whenever search query changes
+      this.fetchFiles(1);
+    }
+  },
+  mounted() {
+    this.fetchFiles();
+  },
   methods: {
     async fetchFiles(page = 1) {
       this.loading = true;
       this.error = null;
       try {
-        const response = await fetch(`/files?page=${page}`, {
+        let path = `/files?page=${page}`;
+        if (this.searchQuery) {
+          path += `&search=${encodeURIComponent(this.searchQuery)}`;
+        }
+        const response = await fetch(path, {
           headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
@@ -177,34 +164,28 @@ export default {
       return date.toLocaleString();
     },
     async deleteFile(fileId) {
-        if (!confirm('Are you sure you want to delete this file?')) return;
+      if (!confirm('Are you sure you want to delete this file?')) return;
 
-        this.deletingId = fileId;
-        this.error = null;
+      this.deletingId = fileId;
+      this.error = null;
 
-        try {
-            // Axios DELETE request
-            await axios.delete(`/files/${fileId}`);
-
-            // Refresh current page after deletion
-            this.fetchFiles(this.pagination.current_page);
-        } catch (error) {
-            // Axios error handling
-            if (error.response && error.response.data && error.response.data.message) {
-            this.error = error.response.data.message;
-            } else {
-            this.error = 'Network or server error while deleting file.';
-            }
-        } finally {
-            this.deletingId = null;
+      try {
+        await axios.delete(`/files/${fileId}`);
+        this.fetchFiles(this.pagination.current_page);
+      } catch (error) {
+        if (error.response && error.response.data && error.response.data.message) {
+          this.error = error.response.data.message;
+        } else {
+          this.error = 'Network or server error while deleting file.';
         }
+      } finally {
+        this.deletingId = null;
+      }
     }
-  },
-  mounted() {
-    this.fetchFiles();
   }
 };
 </script>
+
 
 <style scoped>
 .files-container {

@@ -107,24 +107,31 @@ function getIconComponent(file) {
 }
 
 async function uploadFiles() {
-  const formData = new FormData()
-  files.value.forEach(file => formData.append('files[]', file))
+  const formData = new FormData();
+  files.value.forEach(file => formData.append('files[]', file));
 
   try {
     const response = await axios.post('/upload-files', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
-    })
+    });
+
     emit('close-dialog');
-    alert(response.data.message)
-    files.value = []
+    alert(response.data.message);
+    files.value = [];
+
+    // Refresh the page
+    window.location.reload();
   } catch (error) {
-    console.error(error)
-    alert('Upload failed!')
+    console.error(error);
+    alert('Upload failed!');
+
+    // Optionally refresh on error as well
+    window.location.reload();
   }
-  
 }
+
 </script>
 
 <style scoped>

@@ -9,6 +9,8 @@ import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue'
 const open = ref(false);
 
+const searchQuery = ref('');
+
 function confirm() {
   alert('Confirmed!')
   open.value = false
@@ -33,12 +35,22 @@ function confirm() {
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
                 >
                     <div class="p-6 text-gray-900">
-                        <div class="w-full flex justify-end">
-                            <button @click="open = true" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2">
+    
+                        <div class="top-bar">
+                        <div class="search-upload-wrapper">
+                            <input 
+                            type="text" 
+                            v-model="searchQuery"
+                            placeholder="Search files..." 
+                            class="search-input"
+                            />
+                            <button @click="open = true" class="btn-upload flex items-center gap-2" title="Upload File">
                             <CloudArrowUpIcon class="w-5 h-5" />
-                            Upload File
+                            Upload
                             </button>
                         </div>
+                        </div>
+
                         <Dialogue v-model="open" title="File Upload">
                             <!--Modal heree-->
                             <FileUploadForm @close-dialog="open = false" />
@@ -49,7 +61,7 @@ function confirm() {
                             </button>
                             </template>
                         </Dialogue>
-                        <FileLister/>
+                        <FileLister :search-query="searchQuery"/>
                         
                     </div>
                 </div>
@@ -57,3 +69,44 @@ function confirm() {
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.search-upload-wrapper {
+  display: flex;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #d1d5db;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.btn-upload {
+  background-color: #3b82f6; /* blue-500 */
+  color: white;
+  border: none;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-upload:hover {
+  background-color: #2563eb; /* blue-600 */
+}
+</style>

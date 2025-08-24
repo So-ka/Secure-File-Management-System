@@ -1,61 +1,104 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<h1>📌 Full-Stack Coding Challenge: Simple File Manager</h1>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<h2>Objective</h2>
+<p>Build a secure file management system where authenticated users can upload, list, download, and delete their own files using a Vue 3 frontend and a Laravel API backend.</p>
 
-## About Laravel
+<h2>Requirements</h2>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<h3>Core Features</h3>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<h4>Authentication</h4>
+<ul>
+    <li>User registration, login, and logout</li>
+    <li>Each user manages only their own files</li>
+</ul>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+<h4>File Upload</h4>
+<ul>
+    <li>Single or multiple file uploads (max 5 files per request)</li>
+    <li>Accepted file types: PDF, DOCX, PNG, JPG, ODT</li>
+</ul>
 
-## Learning Laravel
+<h4>File Listing</h4>
+<ul>
+    <li>Paginated list of uploaded files</li>
+    <li>Display: file name, size, type, and upload date</li>
+    <li>Optional: search files by name</li>
+</ul>
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+<h4>File Actions</h4>
+<ul>
+    <li>Download: Download the file</li>
+    <li>Delete: Remove the file (with confirmation)</li>
+</ul>
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+<h3>Docker Setup</h3>
+<ul>
+    <li>Includes working <code>docker-compose.yml</code></li>
+    <li>Ensure Docker and Docker Compose are installed</li>
+</ul>
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+<pre><code># Build and start containers
+docker-compose up -d --build
 
-## Laravel Sponsors
+# Enter Laravel container
+docker exec -it &lt;container_name&gt; bash
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Install dependencies
+composer install
 
-### Premium Partners
+# Run migrations
+php artisan migrate
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Seed database (optional)
+php artisan db:seed
+</code></pre>
 
-## Contributing
+<h3>Tech & Structure</h3>
+<ul>
+    <li>Backend: PHP (Laravel 11+)</li>
+    <li>Frontend: Vue 3</li>
+    <li>Version control: Git</li>
+    <li>Host code on GitHub</li>
+</ul>
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+<h4>Recommended Folder Structure</h4>
+<pre><code>/backend
+    /app
+    /routes
+    /database
+/frontend
+    /src
+        /components
+        /views
+    /public
+docker-compose.yml
+README.md
+</code></pre>
 
-## Code of Conduct
+<h3>Usage</h3>
+<ol>
+    <li>Clone repository:
+        <pre><code>git clone https://github.com/yourusername/simple-file-manager.git</code></pre>
+    </li>
+    <li>Start Docker environment:
+        <pre><code>docker-compose up -d --build</code></pre>
+    </li>
+    <li>Configure <code>.env</code> (database, storage, etc.)</li>
+    <li>Run migrations and seeders:
+        <pre><code>docker exec -it &lt;php-container&gt; bash
+php artisan migrate --seed</code></pre>
+    </li>
+    <li>Access frontend at <code>http://localhost:8080</code></li>
+    <li>Register a user and start managing files</li>
+</ol>
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+<h3>Features Checklist</h3>
+<ul>
+    <li>✔ Authentication</li>
+    <li>✔ File upload (single & multiple)</li>
+    <li>✔ File listing with pagination</li>
+    <li>✔ File download</li>
+    <li>✔ File deletion</li>
+    <li>✔ Dockerized setup</li>
+</ul>

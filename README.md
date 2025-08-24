@@ -62,19 +62,6 @@ php artisan db:seed
     <li>Host code on GitHub</li>
 </ul>
 
-<h4>Recommended Folder Structure</h4>
-<pre><code>/backend
-    /app
-    /routes
-    /database
-/frontend
-    /src
-        /components
-        /views
-    /public
-docker-compose.yml
-README.md
-</code></pre>
 
 <h3>Usage</h3>
 <ol>
@@ -82,12 +69,8 @@ README.md
         <pre><code>git clone https://github.com/yourusername/simple-file-manager.git</code></pre>
     </li>
     <li>Start Docker environment:
-        <pre><code>docker-compose up -d --build</code></pre>
-    </li>
-    <li>Configure <code>.env</code> (database, storage, etc.)</li>
-    <li>Run migrations and seeders:
-        <pre><code>docker exec -it &lt;php-container&gt; bash
-php artisan migrate --seed</code></pre>
+        <pre><code>docker-compose build</code></pre>
+        <pre><code>docker-compose up -d</code></pre>
     </li>
     <li>Access frontend at <code>http://localhost:8080</code></li>
     <li>Register a user and start managing files</li>
@@ -100,5 +83,4 @@ php artisan migrate --seed</code></pre>
     <li>✔ File listing with pagination</li>
     <li>✔ File download</li>
     <li>✔ File deletion</li>
-    <li>✔ Dockerized setup</li>
 </ul>

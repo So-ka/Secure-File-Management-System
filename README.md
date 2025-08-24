@@ -32,28 +32,6 @@
     <li>Delete: Remove the file (with confirmation)</li>
 </ul>
 
-<h3>Docker Setup</h3>
-<ul>
-    <li>Includes working <code>docker-compose.yml</code></li>
-    <li>Ensure Docker and Docker Compose are installed</li>
-</ul>
-
-<pre><code># Build and start containers
-docker-compose up -d --build
-
-# Enter Laravel container
-docker exec -it &lt;container_name&gt; bash
-
-# Install dependencies
-composer install
-
-# Run migrations
-php artisan migrate
-
-# Seed database (optional)
-php artisan db:seed
-</code></pre>
-
 <h3>Tech & Structure</h3>
 <ul>
     <li>Backend: PHP (Laravel 11+)</li>

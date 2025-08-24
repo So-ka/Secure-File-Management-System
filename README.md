@@ -69,7 +69,8 @@ php artisan db:seed
         <pre><code>git clone https://github.com/yourusername/simple-file-manager.git</code></pre>
     </li>
     <li>Start Docker environment:
-        <pre><code>docker-compose build</code></pre>
+        <pre><code>npm install</code></pre>
+        <pre><code>npm run build</code></pre>
         <pre><code>docker-compose up -d</code></pre>
     </li>
     <li>Access frontend at <code>http://localhost:8080</code></li>

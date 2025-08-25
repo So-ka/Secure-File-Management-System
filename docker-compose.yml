@@ -1,46 +1,47 @@
-version: "3.9"
-
 services:
   app:
-    restart: always
     build:
       context: .
       dockerfile: Dockerfile
     container_name: laravel_app
     volumes:
-      - .:/var/www/html
       - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+      - ./.env:/var/www/html/.env
     ports:
       - "8000:8000"
+    restart: unless-stopped
     depends_on:
-      - db
-    environment:
-      APP_ENV: production
-      APP_DEBUG: false
-      APP_KEY: ${APP_KEY}
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: laravel
-      DB_USERNAME: laravel
-      DB_PASSWORD: secret
+      db:
+        condition: service_healthy
+    networks:
+      - laravel
     command: >
-      sh -c "php artisan migrate --force &&
-             php artisan serve --host=0.0.0.0 --port=8000"
-
+      sh -c "
+        php artisan migrate --force &&
+        php artisan serve --host=0.0.0.0 --port=8000
+      "
   db:
     image: mysql:8.0
     container_name: mysql_db
-    restart: always
+    restart: unless-stopped
     environment:
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - "3306:3306"
+      MYSQL_PASSWORD: password
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - laravel
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -proot -e 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+networks:
+  laravel:
 
 volumes:
   db_data:

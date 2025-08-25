@@ -46,13 +46,16 @@
     <li>Clone repository:
         <pre><code>git clone https://github.com/yourusername/simple-file-manager.git</code></pre>
     </li>
-    <li>Start Docker environment:
-        <pre><code>npm install</code></pre>
-        <pre><code>composer install</code></pre>
-        <pre><code>npm run build</code></pre>
-        <pre><code>docker compose build</code></pre>
-        <pre><code>docker compose up -d</code></pre>
-    </li>
+<li>
+    Start the Docker environment:
+    <pre><code>docker compose up -y --build</code></pre>
+    <small>
+        Note: If this is your first time running Docker for this project, it may ask for confirmation to copy 
+        the <code>.env</code> file. In that case, just confirm and re-run 
+        <code>docker compose up -y --build</code>.
+    </small>
+</li>
+
     <li>Access frontend at <code>http://localhost:8080</code></li>
     <li>Register a user and start managing files</li>
 </ol>
